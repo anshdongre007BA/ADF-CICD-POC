@@ -2,6 +2,9 @@ name: Azure Login and Verification
 
 on:
   workflow_dispatch: # Allows manual trigger from the GitHub Actions UI
+permissions:
+        id-token: write
+        contents: read
 
 jobs:
   azure-authentication:
