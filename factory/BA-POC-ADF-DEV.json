@@ -1,0 +1,9 @@
+{
+	"name": "BA-POC-ADF-DEV",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "ba7c573f-4b09-4f23-bcf8-51a2327a3e14",
+		"tenantId": "153dcb9d-7906-432c-8b87-10671d48ff0d"
+	}
+}
