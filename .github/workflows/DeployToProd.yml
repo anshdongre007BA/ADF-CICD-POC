@@ -60,10 +60,10 @@ jobs:
           path: ${{github.workspace}}/ExportedArmTemplate/
         
       - name: Check ARM Template
-        run: cat /home/runner/work/Test/Test/ExportedArmTemplate/ARMTemplateForFactory.json
+        run: cat /home/runner/work/ADF-CICD-POC/ADF-CICD-POC/ExportedArmTemplate/ARMTemplateForFactory.json
 
       - name: Check ARM Parameter
-        run: cat /home/runner/work/Test/Test/ExportedArmTemplate/ARMTemplateParametersForFactory.json
+        run: cat /home/runner/work/ADF-CICD-POC/ADF-CICD-POC/ExportedArmTemplate/ARMTemplateParametersForFactory.json
 
       # - name: Check File Contents of ARM template
       #   run: ls -a /home/runner/work/Test/Test/ExportedArmTemplate/
