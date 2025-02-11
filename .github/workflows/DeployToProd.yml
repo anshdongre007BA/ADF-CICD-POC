@@ -2,7 +2,7 @@
 
 # This step will trigger the CI/CD jobs when a PR is merged to main or any change is detected
 on:
-    push:actions/upload-artifact: v4
+    push:
       branches:
       - main
       
@@ -50,7 +50,7 @@ jobs:
    
 # This step takes the created ARM template files in the previous steps and uploads it in the working directory mentioned below:
       - name: upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ExportedArmTemplate # (4) use the same artifact name you used in the previous export step
           path: ${{github.workspace}}/ExportedArmTemplate/
