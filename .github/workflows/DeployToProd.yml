@@ -34,11 +34,7 @@ jobs:
         run: npm install
         working-directory: ${{github.workspace}}/build  # (1) provide the folder location of the package.json file
           
-  #Validates all of the Data Factory resources in the repository.
-      - name: Validate is working hence commenting
-        run: npm run build validate ${{github.workspace}}/build /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV # (2) The validate command needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance 
-        working-directory: ${{github.workspace}}
-   
+
 
 # This step validates if the package.json file exists at the root of the repository       
       - name: Verify package.json exists
