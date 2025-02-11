@@ -39,7 +39,7 @@ jobs:
 # This step validates if the package.json file exists at the root of the repository       
       - name: Verify package.json exists
         run: |
-          if [ ! -f ${{ github.workspace }}/package.json ]; then
+          if [ ! -f ${{ github.workspace }}/build/package.json ]; then
             echo "package.json not found!"
             exit 1
           fi
