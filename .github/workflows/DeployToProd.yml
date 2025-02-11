@@ -1,0 +1,114 @@
+# Created by dinkal.chug@bluealtair.com 
+
+# This step will trigger the CI/CD jobs when a PR is merged to main or any change is detected
+on:
+    push:
+      branches:
+      - main
+      
+
+# This step will grant the OIDC token access to write the contents to the destination ADF residing in a different Resource Group.
+permissions:
+        id-token: write
+        contents: read
+
+# The jobs section divide the CI/CD process into two jobs. 'build' & 'release'
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      steps:
+  
+# This action checksout the repository under the Github Variable $GITHUB_WORKSPACE for further use
+      - uses: actions/checkout@v3
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.4.1
+        with:
+          node-version: 18.x
+
+# This action installs the dependencies defined in the package.json file to run, build and export the Data Factory Artifacts          
+      - name: install ADF Utilities package
+        run: npm install
+        working-directory: ${{github.workspace}}/build  # (1) provide the folder location of the package.json file
+          
+  #Validates all of the Data Factory resources in the repository.
+      - name: Validate is working hence commenting
+        run: npm run build validate ${{github.workspace}} /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV # (2) The validate command needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance 
+        working-directory: ${{github.workspace}}
+   
+
+# This step validates if the package.json file exists at the root of the repository       
+      - name: Verify package.json exists
+        run: |
+          if [ ! -f ${{ github.workspace }}/package.json ]; then
+            echo "package.json not found!"
+            exit 1
+          fi
+
+# This step validates the ARM template and generates and exports the latest Data Facotry artifacts and uses the name "ExportedARMTemplate"
+      - name: Validate and Generate ARM template
+        run: npm run build export ${{ github.workspace }} /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV "ExportedArmTemplate"  # (3) The build command, as validate, needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance. The 3rd parameter is the exported ARM template artifact name 
+   
+# This step takes the created ARM template files in the previous steps and uploads it in the working directory mentioned below:
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ExportedArmTemplate # (4) use the same artifact name you used in the previous export step
+          path: ${{github.workspace}}/ExportedArmTemplate/
+        
+      - name: Check ARM Template
+        run: cat /home/runner/work/Test/Test/ExportedArmTemplate/ARMTemplateForFactory.json
+
+      - name: Check ARM Parameter
+        run: cat /home/runner/work/Test/Test/ExportedArmTemplate/ARMTemplateParametersForFactory.json
+
+      # - name: Check File Contents of ARM template
+      #   run: ls -a /home/runner/work/Test/Test/ExportedArmTemplate/
+          
+    release:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+      
+   # we 1st download the previously uploaded artifact so we can leverage it later in the release job     
+        - name: Download a Build Artifact
+          uses: actions/download-artifact@v3.0.2
+          with:
+            name: ExportedArmTemplate # (5) Artifact name 
+            path: ${{github.workspace}}/build/ExportedArmTemplate
+
+        # - name: Check File Contents of ARM template of the downloaded artifact
+        #   run: ls -a ${{github.workspace}}/build/ExportedArmTemplate/
+  
+# This pre-built action authenticates the Service Principal via OIDC login and a JWT token and grants access to the SP to perform the necessary deployment.
+        - name: Login via Az module
+          uses: azure/login@v2
+          with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+            enable-AzPSSession: true 
+            allow-no-subscriptions: true
+
+# This step checks if the OIDC login via SERVICE_PRINCIPAL was successful and displays it in the Terminal
+        - name: Azure CLI script
+          uses: azure/CLI@v2
+          with:
+              azcliversion: latest
+              inlineScript: |
+                az account show
+
+# This pre-built action is used to deploy the generated ARM Template and Parameters Template to the destination ADF
+        - name: data-factory-deploy
+          uses: Azure/data-factory-deploy-action@v1.2.0
+          
+          with:
+            resourceGroupName: CI-CD-POC # (6) your target ADF resource group name
+            dataFactoryName: BA-POC-ADF-PROD # (7) your target ADF name
+            armTemplateFile: ${{github.workspace}}/build/ExportedArmTemplate/ARMTemplateForFactory.json # (8) ARM template file name ARMTemplateForFactory.json
+            armTemplateParametersFile: ${{github.workspace}}/build/ExportedArmTemplate/ARMTemplateParametersForFactory.json # (9) ARM template parameters file name ARMTemplateParametersForFactory.json
+            #The above field accepts the values which are parameterized via the arm-template-parameters-definition.json file.
+            #The secrets (if any) should be stored in the Github and then accessed via the secrets variable  
+            #additionalParameters: # (10) Parameters which will be replaced in the ARM template. Expected format 'key1=value key2=value keyN=value'. At the minimum here you should provide the target ADF name parameter. Check the ARMTemplateParametersForFactory.json file for all the parameters that are expected in your scenario
+            # skipAzModuleInstallation:  # Parameters which skip the Az module installation. Optional, default is false..
+            
+            
