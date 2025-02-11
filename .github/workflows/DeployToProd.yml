@@ -36,7 +36,7 @@ jobs:
           
   #Validates all of the Data Factory resources in the repository.
       - name: Validate is working hence commenting
-        run: npm run build validate ${{github.workspace}} /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV # (2) The validate command needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance 
+        run: npm run build validate ${{github.workspace}}/build /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV # (2) The validate command needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance 
         working-directory: ${{github.workspace}}
    
 
