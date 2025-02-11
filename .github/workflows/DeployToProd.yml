@@ -2,7 +2,7 @@
 
 # This step will trigger the CI/CD jobs when a PR is merged to main or any change is detected
 on:
-    push:
+    push:actions/upload-artifact: v4
       branches:
       - main
       
