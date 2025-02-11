@@ -75,7 +75,7 @@ jobs:
           uses: actions/download-artifact@v4
           with:
             name: ExportedArmTemplate # (5) Artifact name 
-            path: ${{github.workspace}}/build/ExportedArmTemplate
+            path: ${{github.workspace}}/ExportedArmTemplate
 
         # - name: Check File Contents of ARM template of the downloaded artifact
         #   run: ls -a ${{github.workspace}}/build/ExportedArmTemplate/
