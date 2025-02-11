@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ExportedArmTemplate # (4) use the same artifact name you used in the previous export step
-          path: ${{github.workspace}}/ExportedArmTemplate/
+          path: ${{github.workspace}}/build/ExportedArmTemplate/
         
       - name: Check ARM Template
         run: cat /home/runner/work/ADF-CICD-POC/ADF-CICD-POC/build/ExportedArmTemplate/ARMTemplateForFactory.json
