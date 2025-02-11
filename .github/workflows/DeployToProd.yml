@@ -46,7 +46,8 @@ jobs:
 
 # This step validates the ARM template and generates and exports the latest Data Facotry artifacts and uses the name "ExportedARMTemplate"
       - name: Validate and Generate ARM template
-        run: npm run build export ${{ github.workspace }} /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV "ExportedArmTemplate"  # (3) The build command, as validate, needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance. The 3rd parameter is the exported ARM template artifact name 
+        run: npm run build export ${{github.workspace}} /subscriptions/38d37a2e-7dcb-432a-8735-746e19189d13/resourceGroups/CI-CD-POC/providers/Microsoft.DataFactory/factories/BA-POC-ADF-DEV "ExportedArmTemplate"  # (3) The build command, as validate, needs the root folder location of your repository where all the objects are stored. And the 2nd parameter is the resourceID of the ADF instance. The 3rd parameter is the exported ARM template artifact name 
+        working-directory: ${{github.workspace}}/build
    
 # This step takes the created ARM template files in the previous steps and uploads it in the working directory mentioned below:
       - name: upload artifact
